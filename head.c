@@ -32,7 +32,7 @@ void c_bytes(int fd, int bytes_num)
 		if (total >= bytes_num) {
 			break;
 		} // if
-
+	} // while
 } // c_bytes
  
 void n_lines(int fd, int lines_num)
@@ -60,6 +60,7 @@ void n_lines(int fd, int lines_num)
 				break;
 			} // if
 		} // while
+	} // while
 } // n_lines
  
 
