@@ -1,28 +1,16 @@
-FLAGS = -Wall -pedantic-errors
+CC = gcc
+CFLAGS = -Wall -pedantic-errors
 
 # Executable names
-Head = head
-WC = wc
-
-# Source files
-SRC_HEAD = $(HEAD).c
-SRC_WC = $(WC).c
-
-# Object files
-OB_HEAD = $(HEAD).o
-OB_WC = $(WC).o
+HEAD = head
 
 # target
-all: $(HEAD) $(WC)
+all: $(HEAD) 
 
 # build head executable
-$(HEAD): $(SRC_HEAD)
-	$(CC) $(FLAGS) -o $(HEAD) $(SRC_HEAD)
-
-# build wc executable
-$(WC): $(SRC_WC)
-	$(CC) $(FLAGS) -o $(WC) $(SRC_WC)
+$(HEAD): head.c
+	$(CC) $(CFLAGS) -o $(HEAD) head.c
 
 
 clean:
-	rm -f $(HEAD) $(WC)
+	rm -f $(HEAD) 
