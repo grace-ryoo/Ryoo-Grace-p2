@@ -16,6 +16,10 @@
 
 #define BUFF 1048576 // buffer size 
 
+/**
+ *
+ *
+ */
 void c_bytes(int fd, int bytes_num) 
 {
 	int total = 0;
@@ -33,8 +37,14 @@ void c_bytes(int fd, int bytes_num)
 			break;
 		} // if
 	} // while
+	
+	write(STDOUT_FILENO, "\n", 1);
 } // c_bytes
  
+/**
+ *
+ *
+ */
 void n_lines(int fd, int lines_num)
 {
 	char buffer[BUFF];
@@ -46,25 +56,31 @@ void n_lines(int fd, int lines_num)
 	while ((read_bytes = read(fd, buffer, BUFF)) > 0) {
 		ptr = buffer;
 		while (read_bytes > 0 && counter < lines_num) {
-			nxt = memchr(ptr, 'n', read_bytes);
+			nxt = memchr(ptr, '\n', read_bytes);
 			if (nxt != NULL) {
-				counter++;
 				nxt++;
+				write(STDOUT_FILENO, ptr, nxt - ptr);
+				counter++;
 				read_bytes -= (nxt - ptr);
 				ptr = nxt;
 			} else {
-				break;
-			} // if
-			write(STDOUT_FILENO, buffer, ptr - buffer);
-			if (counter >= lines_num) {
+				write(STDOUT_FILENO, buffer, read_bytes);
 				break;
 			} // if
 		} // while
+		if (counter >= lines_num) {
+			break;
+		} // if
 	} // while
+
+	write(STDOUT_FILENO, "\n", 1);
 } // n_lines
  
 
-
+/**
+ *
+ *
+ */
 int main(int argc, char *argv[]) 
 {
 	int opt;
@@ -72,7 +88,6 @@ int main(int argc, char *argv[])
 	int cflag = 0;
 	int num = 10;
 	int fd;
-
 
 	while((opt = getopt(argc, argv, "c:n:")) != -1)
        	{
@@ -98,7 +113,7 @@ int main(int argc, char *argv[])
 	} // while
 	
 	if (cflag && nflag) {
-		fprintf(stderr, "Error: cannot combine -c and -n options.");
+		fprintf(stderr, "Error: cannot combine -c and -n options.\n");
 		exit(EXIT_FAILURE);
 	} // if
 
@@ -109,7 +124,14 @@ int main(int argc, char *argv[])
 			n_lines(STDIN_FILENO, num);
 		} // if
 	} else {
+		int file_one = 1;
 		for(; optind < argc; optind++){
+			if (!file_one) {
+				write(STDOUT_FILENO, "\n", 1);
+			} // if
+			
+			file_one = 0;
+
 			if (strcmp(argv[optind], "-") == 0) {
 				fd = STDIN_FILENO;
 			} else {
@@ -118,8 +140,8 @@ int main(int argc, char *argv[])
 					fprintf(stderr, "cannot open file %s: %s\n", argv[optind], strerror(errno));
 					continue;
 				} // if
-			} // 
-
+			} // 	
+	
 			if (cflag) {
 				c_bytes(fd, num);
 			} else if (nflag) {
@@ -131,6 +153,5 @@ int main(int argc, char *argv[])
 	} // if
 	
 	return 0;
-
 
 } // main
