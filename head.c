@@ -7,15 +7,61 @@
  *
  */
 
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
- #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
- #define BUFF 1048576 // buffer size 
+#define BUFF 1048576 // buffer size 
 
+void c_bytes(int fd, int bytes_num) 
+{
+	int total = 0;
+	ssize_t read_bytes = 0;
+	char buffer[BUFF];
 
+	while ((read_bytes = read(fd, buffer, BUFF)) > 0) {
+		if (total + read_bytes > bytes_num) {
+			read_bytes = bytes_num - total;
+		} // if
+		
+		write(STDOUT_FILENO, buffer, read_bytes);
+		total += read_bytes;
+		if (total >= bytes_num) {
+			break;
+		} // if
 
+} // c_bytes
+ 
+void n_lines(int fd, int lines_num)
+{
+	char buffer[BUFF];
+	int counter = 0;
+	ssize_t read_bytes;
+	char *ptr;
+	char *nxt;
+	
+	while ((read_bytes = read(fd, buffer, BUFF)) > 0) {
+		ptr = buffer;
+		while (read_bytes > 0 && counter < lines_num) {
+			nxt = memchr(ptr, 'n', read_bytes);
+			if (nxt != NULL) {
+				counter++;
+				nxt++;
+				read_bytes -= (nxt - ptr);
+				ptr = nxt;
+			} else {
+				break;
+			} // if
+			write(STDOUT_FILENO, buffer, ptr - buffer);
+			if (counter >= lines_num) {
+				break;
+			} // if
+		} // while
+} // n_lines
+ 
 
 
 int main(int argc, char *argv[]) 
@@ -71,15 +117,18 @@ int main(int argc, char *argv[])
 					fprintf(stderr, "cannot open file %s: %s\n", argv[optind], strerror(errno));
 					continue;
 				} // if
-			} // if
-		} // for
-		
-		if (cflag) {
-			c_bytes(fd, num);
-		} else if (nflag) {
-			n_lines(fd, num);
-		} // if
+			} // 
 
+			if (cflag) {
+				c_bytes(fd, num);
+			} else if (nflag) {
+				n_lines(fd, num);
+			} // if
+
+			close(fd);
+		} // for
+	} // if
+	
 	return 0;
 
 
