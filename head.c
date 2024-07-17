@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 		} // if
 	} else {
 		int file_one = 1;
-		for(; optind < argc; optind++){
+		for(; optind < argc; optind++) {
 			if (!file_one) {
 				write(STDOUT_FILENO, "\n", 1);
 			} // if
