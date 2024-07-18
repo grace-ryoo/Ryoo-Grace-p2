@@ -12,8 +12,41 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #define BUFF 1048576 // buffer size
+
+void bytes_size(char *file) 
+{
+	int fd = open(file, O_RDONLY);
+	if (fd == -1) {
+		perror("open");
+		return;	
+	} // if
+
+	off_t bytes_size = lseek(fd, 0, SEEK_END);
+
+	if (bytes_size == -1) {
+		perror("lseek");
+	} else {
+   		printf("The size of %s is %ld bytes\n", file, bytes_size);
+	} // if
+	
+	close(fd);	
+
+} // bytes_size
+
+void new_lines_size() 
+{
+
+} // new_lines_size
+
+void words_size() 
+{
+
+} // words_size
+
 
 /**
  *
@@ -25,7 +58,6 @@ int main(int argc, char *argv[])
 	int cflag = 0;
 	int lflag = 0;
 	int wflag = 0;
-	int fd;
 
 	while ((opt = getopt(argc, argv, "clw")) != -1) 
 	{
@@ -49,29 +81,25 @@ int main(int argc, char *argv[])
 	if (cflag + lflag + wflag == 0) { // standard input assumed
 		cflag = lflag = wflag = 1;
 	} // if
-
-	if (cflag) {
+	for (int i = optind; i < argc; i++) {
+		char *file = argv[i];
 		
-	} // if
+		if (cflag) { // number of bytes
+			bytes_size(file);
+		} // if
 
-	if (lflag) {
+		if (lflag) { // number of newlines
+			new_lines_size(file);
+		} // if
 
-	} // if
-	
-	if (wflag) {
-
-	} // if
-
-	for(; optind < argc; optind++) {
-
+		if (wflag) { // number of words
+			words_size(file);
+		} // if
 	} // for
 
 
+
 	return 0;
-
-
-
-
 
 
 
