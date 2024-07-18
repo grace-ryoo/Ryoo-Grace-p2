@@ -34,7 +34,7 @@ void bytes_size(char *file)
 	if (bytes_size == -1) {
 		perror("lseek");
 	} else {
-   		printf("The size of %s is %ld bytes\n", file, bytes_size);
+   		printf("The number of bytes in %s is %ld.\n", file, bytes_size);
 	} // if
 	
 	close(fd);	
@@ -68,7 +68,7 @@ void new_lines_size(char *file)
 	if (n == -1) {
 		perror("read");
 	} else {
-		printf("The number of newlines in %s is %d\n", file, counter);
+		printf("The number of newlines in %s is %d.\n", file, counter);
 	} // if
 
 	close(fd);
@@ -77,6 +77,7 @@ void new_lines_size(char *file)
 /**
  *
  *
+ */
 void words_size(char *file) 
 {
 	int fd = open(file, O_RDONLY);
@@ -84,9 +85,32 @@ void words_size(char *file)
 		perror("open");
 		return;	
 	} // if
+	
+	int counter = 0;
+	int n;
+	char buffer[BUFF];
+	int word = 0;
+
+	while((n = read(fd, buffer, BUFF)) > 0) {
+		for (int i = 0; i < n; i++) {
+			if (buffer[i] == ' ' || buffer[i] == '\n' || buffer[i] == '\t') {
+				word = 0;
+			} else if (word == 0) {
+				word = 1;
+				counter++;
+			} // if
+		} // for
+	} // while
+	
+	if (n == -1) {
+		perror("read");
+	} else {
+		printf("The number of words in %s is %d.\n", file, counter);
+	} // if
+
+	close(fd);
 
 } // words_size
-*/
 
 /**
  *
@@ -137,11 +161,11 @@ int main(int argc, char *argv[])
 		if (lflag) { // number of newlines
 			new_lines_size(file);
 		} // if
-/**
+
 		if (wflag) { // number of words
 			words_size(file);
 		} // if
-		  */
+		  
 	} // for
 
 
