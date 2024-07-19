@@ -23,7 +23,7 @@
 void c_bytes(int fd, int bytes_num) 
 {
 	int total = 0;
-	ssize_t read_bytes = 0;
+	ssize_t read_bytes;
 	char buffer[BUFF];
 
 	while ((read_bytes = read(fd, buffer, BUFF)) > 0) {
@@ -37,6 +37,10 @@ void c_bytes(int fd, int bytes_num)
 			break;
 		} // if
 	} // while
+	
+	if (read_bytes == -1) {
+		perror("read");
+	} // if
 	
 	write(STDOUT_FILENO, "\n", 1);
 } // c_bytes
@@ -65,14 +69,18 @@ void n_lines(int fd, int lines_num)
 				ptr = nxt;
 			} else {
 				write(STDOUT_FILENO, buffer, read_bytes);
-				break;
+				read_bytes = 0;
 			} // if
 		} // while
+
 		if (counter >= lines_num) {
 			break;
 		} // if
 	} // while
-
+	
+	if (read_bytes == -1) {
+		perror("read");
+	} // if
 	write(STDOUT_FILENO, "\r", 1);
 } // n_lines
  
@@ -112,7 +120,6 @@ int main(int argc, char *argv[])
 			case '?':
 				fprintf(stderr, "unknown option: %c\n", optopt);
 				exit(EXIT_FAILURE);
-				break;
 		} // switch
 	} // while
 	
