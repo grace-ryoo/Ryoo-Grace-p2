@@ -73,7 +73,7 @@ void n_lines(int fd, int lines_num)
 		} // if
 	} // while
 
-	write(STDOUT_FILENO, "\n", 1);
+	write(STDOUT_FILENO, "\r", 1);
 } // n_lines
  
 
@@ -109,12 +109,18 @@ int main(int argc, char *argv[])
 					exit(EXIT_FAILURE);
 				} // if
 				break;
+			case '?':
+				fprintf(stderr, "unknown option: %c\n", optopt);
+				exit(EXIT_FAILURE);
+				break;
 		} // switch
 	} // while
 	
-	if (cflag && nflag) {
+	if (cflag && nflag) { // cannot have both options
 		fprintf(stderr, "Error: cannot combine -c and -n options.\n");
 		exit(EXIT_FAILURE);
+	} else if (!cflag && !nflag) { // default to -n 10 if no options specified
+		nflag = 1;
 	} // if
 
 	if (optind == argc) {
@@ -147,8 +153,10 @@ int main(int argc, char *argv[])
 			} else if (nflag) {
 				n_lines(fd, num);
 			} // if
-
-			close(fd);
+			
+			if (fd != STDOUT_FILENO) {
+				close(fd);
+			} // if
 		} // for
 	} // if
 	
