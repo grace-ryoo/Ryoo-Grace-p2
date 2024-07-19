@@ -1,9 +1,9 @@
 /**
  * head.c
  *
+ * Implements the head utility. The utility copies its input files to the standard output, ending the output for each file at a designated point.
+ *
  * Usage: head [-c number | -n number] [files...]
- *
- *
  *
  */
 
@@ -17,8 +17,12 @@
 #define BUFF 1048576 // buffer size 
 
 /**
+ * Copies the first 'bytes_num' bytes from the 'fd' file descriptor to standard output.
  *
+ * @param fd The file descriptor used to copy bytes from.
+ * @param bytes_num The number of bytes to copy.
  *
+ * A standard error message is printed if an occurs while reading.
  */
 void c_bytes(int fd, int bytes_num) 
 {
@@ -46,8 +50,12 @@ void c_bytes(int fd, int bytes_num)
 } // c_bytes
  
 /**
+ * Copies the first 'lines_num' lines from the 'fd' file descriptor to standard output.
  *
+ * @param fd The file descriptor used to copy lines from.
+ * @param lines_num The number of lines to copy.
  *
+ * A standard error message is printed if an occurs while reading.
  */
 void n_lines(int fd, int lines_num)
 {
@@ -86,7 +94,14 @@ void n_lines(int fd, int lines_num)
  
 
 /**
+ * Parses and processes command line arguments to copy bytes or lines from input to standard output. 
  *
+ * If no options are specified, -n 10 is the default option. 
+ * If both '-c' and '-n' options are specified, the program will return an error message.
+ * Standard input is assumed if no files are specified or when one of the files is '-'.
+ *
+ * @param argc The total number of command line arguments.
+ * @param argv The array of command line argument strings.
  *
  */
 int main(int argc, char *argv[]) 

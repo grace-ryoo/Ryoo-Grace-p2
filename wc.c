@@ -1,10 +1,9 @@
 /**
  * wc.c
  *
+ * Implements the wc utility. The utility reads one or more input files and writes the number of bytes, newlines, and/or words in each input file to the standard output according to the options specified. If more than one input file is specified, the utility will write a total count for all named files.
  *
  * Usage: [-clw] [files...]
- *
- *
  *
  */
 
@@ -22,8 +21,12 @@ int lines_total = 0;
 int words_total = 0;
 
 /**
+ * Calculates and writes the number of bytes to standard output from the file descriptor 'fd'.
  *
+ * @param fd The file descriptor read from.
+ * @param file The name of the file.
  *
+ * A standard error message is printed if an error occurs while reading.
  */
 void bytes_size(int fd, char *file) 
 {
@@ -45,8 +48,12 @@ void bytes_size(int fd, char *file)
 } // bytes_size
 
 /**
+ * Calculates and writes the number of newlines to standard output from the file descriptor 'fd'.
  *
+ * @param fd The file descriptor read from.
+ * @param file The name of the file.
  *
+ * A standard error message is printed if an error occurs while reading.
  */
 void new_lines_size(int fd, char *file) 
 {
@@ -72,8 +79,12 @@ void new_lines_size(int fd, char *file)
 } // new_lines_size
 
 /**
+ * Calculates and writes the number of words to standard output from the file descriptor 'fd'.
  *
+ * @param fd The file descriptor read from.
+ * @param file The name of the file.
  *
+ * A standard error message is printed if an error occurs while reading.
  */
 void words_size(int fd, char *file) 
 {
@@ -103,8 +114,12 @@ void words_size(int fd, char *file)
 } // words_size
 
 /**
+ * Processes the file or standard input to be computed and performs options according to the options specified.
  *
- *
+ * @param file The name of the file or '-' for standard input.
+ * @param cflag A flag representing whether to calculate the number of bytes.
+ * @param lflag A flag representing whether to calculate the number of newlines.
+ * @param wflag A flag representing whether to calculate the number of words.
  */
 void filing(char *file, int cflag, int lflag, int wflag) 
 {
@@ -135,8 +150,14 @@ void filing(char *file, int cflag, int lflag, int wflag)
 } // filing
 
 /**
+ * Parses and processes command line arguments to calculate bytes, newlines, and/or words from input to standard output.
  *
+ * If more than one input file is specified, the function will return a total count for all named files.
+ * Any combination of '-c', '-l', and '-w' options should be handled.
+ * Standard input is assumed if no files are specified or when one of the files is '-'.
  *
+ * @param argc The total number of command line arguments.
+ * @param argv The array of command line argument strings.
  */
 int main(int argc, char *argv[])
 {
