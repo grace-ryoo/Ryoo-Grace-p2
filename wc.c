@@ -27,16 +27,20 @@ int words_total = 0;
  */
 void bytes_size(int fd, char *file) 
 {
-	off_t bytes_size = lseek(fd, 0, SEEK_END);
-
-	if (bytes_size == -1) {
-		perror("lseek");
+	off_t bytes_size = 0;
+	int n;
+	char buffer[BUFF];
+	
+	while((n = read(fd, buffer, BUFF)) > 0) {
+		bytes_size += n;
+	} // while
+	
+	if (n == -1) {
+		perror("read");
 	} else {
    		printf("The number of bytes in %s is %ld.\n", file, bytes_size);
 		bytes_total += bytes_size;
-	} // if
-	
-	lseek(fd, 0, SEEK_SET);
+	} // if	
 
 } // bytes_size
 
@@ -65,7 +69,6 @@ void new_lines_size(int fd, char *file)
 		lines_total += counter;
 	} // if
 	
-	lseek(fd, 0, SEEK_SET);
 } // new_lines_size
 
 /**
@@ -97,7 +100,6 @@ void words_size(int fd, char *file)
 		words_total += counter;
 	} // if
 	
-	lseek(fd, 0, SEEK_SET);
 } // words_size
 
 /**
@@ -114,14 +116,17 @@ void filing(char *file, int cflag, int lflag, int wflag)
 		
 	if (cflag) { // number of bytes
 		bytes_size(fd, file);
+		lseek(fd, 0, SEEK_SET);
 	} // if
 
 	if (lflag) { // number of newlines
 		new_lines_size(fd, file);
+		lseek(fd, 0, SEEK_SET);
 	} // if
 
 	if (wflag) { // number of words
 		words_size(fd, file);
+		lseek(fd, 0, SEEK_SET);
 	} // if
 	
 	if (fd != STDIN_FILENO) {
@@ -154,12 +159,12 @@ int main(int argc, char *argv[])
 				wflag = 1;
 				break;
 			case '?':
-				printf("unknown option: %c\n", optopt);
-				break;
+				fprintf(stderr, "unknown option: %c\n", optopt);
+				exit(EXIT_FAILURE);
 		} // switch
 	} // while
 
-	if (cflag + lflag + wflag == 0) { // standard input assumed
+	if (cflag + lflag + wflag == 0) { // -clw default assumed if no options specified
 		cflag = lflag = wflag = 1;
 	} // if
 
@@ -173,15 +178,15 @@ int main(int argc, char *argv[])
 
 	if (argc - optind > 1) {
 		if (cflag) {
-			printf("The total number of bytes is %ld\n", bytes_total);
+			printf("The total number of bytes is %ld.\n", bytes_total);
 		} // if
 		
 		if (lflag) {
-			printf("The total number of newlines is %d\n", lines_total);
+			printf("The total number of newlines is %d.\n", lines_total);
 		} // if
 	
 		if (wflag) {
-			printf("The total number of words is %d\n", words_total);
+			printf("The total number of words is %d.\n", words_total);
 		} // if
 	} // if
 
