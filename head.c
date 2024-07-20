@@ -153,6 +153,7 @@ int main(int argc, char *argv[])
 		} // if
 	} else {
 		int file_one = 1;
+		int file_counting = 0;
 
 		for (; optind < argc; optind++) {
 			if (!file_one) {
@@ -163,7 +164,7 @@ int main(int argc, char *argv[])
 
 			if (strcmp(argv[optind], "-") == 0) {
 				fd = STDIN_FILENO;
-				if (argc - optind > 1) {
+				if (argc - optind > 1 && file_counting > 0) {
 					write(STDOUT_FILENO, "==> standard input <==\n", 24);
 				} // if
 			} else {
@@ -173,26 +174,14 @@ int main(int argc, char *argv[])
 					continue;
 				} // if
 
-				if (argc - optind > 1) {
+				if (argc - optind > 1 && file_counting > 0) {
 					const char *header_form = "==> %s <==\n";
 					char header[256];
 					int length_header = snprintf(header, sizeof(header), header_form, argv[optind]);
 					write(STDOUT_FILENO, header, length_header);
 				} // if
 			} // 
-	/**
-			if (argc - optind > 1) {
-				if (fd == STDIN_FILENO) {
-					write(STDOUT_FILENO, "==> standard input <==\n", 24);
-				} 
-				if (fd != STDIN_FILENO) {
-					const char *header_form = "==> %s <==\n";
-					char header[256];
-					int length_header = snprintf(header, sizeof(header), header_form, argv[optind]);
-					write(STDOUT_FILENO, header, length_header);
-				} // if
-			} // if
-	*/		
+			
 			if (cflag) {
 				c_bytes(fd, num);
 			} else if (nflag) {
@@ -202,6 +191,8 @@ int main(int argc, char *argv[])
 			if (fd != STDOUT_FILENO) {
 				close(fd);
 			} // if
+
+			file_counting++;
 		} // for
 	} // if
 	
