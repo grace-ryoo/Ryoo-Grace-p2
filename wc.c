@@ -41,7 +41,7 @@ void bytes_size(int fd, char *file)
 	if (n == -1) {
 		perror("read");
 	} else {
-   		printf("The number of bytes in %s is %ld.\n", file, bytes_size);
+   		printf("%ld ",  bytes_size);
 		bytes_total += bytes_size;
 	} // if	
 
@@ -72,7 +72,7 @@ void new_lines_size(int fd, char *file)
 	if (n == -1) {
 		perror("read");
 	} else {
-		printf("The number of newlines in %s is %d.\n", file, counter);
+		printf("%d ", counter);
 		lines_total += counter;
 	} // if
 	
@@ -107,7 +107,7 @@ void words_size(int fd, char *file)
 	if (n == -1) {
 		perror("read");
 	} else {
-		printf("The number of words in %s is %d.\n", file, counter);
+		printf("%d ", counter);
 		words_total += counter;
 	} // if
 	
@@ -129,11 +129,6 @@ void filing(char *file, int cflag, int lflag, int wflag)
 		return;
 	} // if
 		
-	if (cflag) { // number of bytes
-		bytes_size(fd, file);
-		lseek(fd, 0, SEEK_SET);
-	} // if
-
 	if (lflag) { // number of newlines
 		new_lines_size(fd, file);
 		lseek(fd, 0, SEEK_SET);
@@ -144,8 +139,17 @@ void filing(char *file, int cflag, int lflag, int wflag)
 		lseek(fd, 0, SEEK_SET);
 	} // if
 	
+	if (cflag) { // number of bytes
+		bytes_size(fd, file);
+		lseek(fd, 0, SEEK_SET);
+	} // if
+	
 	if (fd != STDIN_FILENO) {
 		close(fd);
+	} // if
+	  
+	if (cflag || lflag || wflag) {
+		printf("%s\n", file);
 	} // if
 } // filing
 
