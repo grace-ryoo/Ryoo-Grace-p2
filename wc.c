@@ -131,17 +131,23 @@ void filing(char *file, int cflag, int lflag, int wflag)
 		
 	if (lflag) { // number of newlines
 		new_lines_size(fd, file);
-		lseek(fd, 0, SEEK_SET);
+		if (fd != STDIN_FILENO) {
+			lseek(fd, 0, SEEK_SET);
+		} // if
 	} // if
 
 	if (wflag) { // number of words
 		words_size(fd, file);
-		lseek(fd, 0, SEEK_SET);
+		if (fd != STDIN_FILENO) {
+			lseek(fd, 0, SEEK_SET);
+		} // if
 	} // if
 	
 	if (cflag) { // number of bytes
 		bytes_size(fd, file);
-		lseek(fd, 0, SEEK_SET);
+		if (fd != STDIN_FILENO) {
+			lseek(fd, 0, SEEK_SET);
+		} // IF
 	} // if
 	
 	if (fd != STDIN_FILENO) {
@@ -184,7 +190,7 @@ int main(int argc, char *argv[])
 				wflag = 1;
 				break;
 			case '?':
-				fprintf(stderr, "unknown option: %c\n", optopt);
+				write(STDERR_FILENO, "unknown option\n", 16);
 				exit(EXIT_FAILURE);
 		} // switch
 	} // while
@@ -199,19 +205,24 @@ int main(int argc, char *argv[])
 		for (int i = optind; i < argc; i++) {
 			filing(argv[i], cflag, lflag, wflag);  
 		} // for
-	} // if
 
-	if (argc - optind > 1) {
-		if (cflag) {
-			printf("The total number of bytes is %ld.\n", bytes_total);
-		} // if
-		
-		if (lflag) {
-			printf("The total number of newlines is %d.\n", lines_total);
-		} // if
+
+		if (argc - optind > 1) {
+			setbuf(stdout, NULL);
+
+			if (lflag) {
+				printf("%d ", lines_total);
+			} // if
 	
-		if (wflag) {
-			printf("The total number of words is %d.\n", words_total);
+			if (wflag) {
+				printf("%d ", words_total);
+			} // if
+		
+			if (cflag) {
+				printf("%ld ", bytes_total);
+			} // if
+		
+			write(STDOUT_FILENO, "total\n", 7);
 		} // if
 	} // if
 
